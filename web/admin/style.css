@@ -1,0 +1,186 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    font-size: 14px;
+}
+
+.stat-item {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #3498db;
+}
+
+section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button {
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+.list {
+    display: grid;
+    gap: 10px;
+}
+
+.magnet-item, .file-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.magnet-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.magnet-name {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.magnet-info {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.magnet-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.file-details {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+}

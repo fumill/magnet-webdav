@@ -1,0 +1,25 @@
+server:
+  port: "3000"
+  env: "development"
+  read_timeout: 30s
+  write_timeout: 30s
+  domain: "localhost"
+
+database:
+  driver: "sqlite"
+  name: "magnet_webdav.db"
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: "1h"
+
+torrent:
+  download_dir: "./data/torrents"
+  cache_size: 1073741824
+  max_connections: 100
+  user_agent: "Magnet-WebDAV/1.0"
+  listen_port: 0
+
+auth:
+  enabled: false
+  username: "admin"
+  password: "password"

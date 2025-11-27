@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magnet WebDAV 管理界面</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Magnet WebDAV 管理器</h1>
+        <div class="stats" id="stats"></div>
+    </header>
+
+    <main>
+        <section class="add-magnet">
+            <h2>添加磁力链接</h2>
+            <div class="input-group">
+                <input type="text" id="magnetInput" placeholder="输入磁力链接 (magnet:?xt=urn:btih:...)" />
+                <button onclick="addMagnet()">添加</button>
+            </div>
+        </section>
+
+        <section class="magnets-list">
+            <h2>磁力链接列表</h2>
+            <div id="magnetsList" class="list"></div>
+        </section>
+
+        <section class="files-list" id="filesSection" style="display: none;">
+            <h2>文件列表</h2>
+            <div id="filesList" class="list"></div>
+        </section>
+    </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

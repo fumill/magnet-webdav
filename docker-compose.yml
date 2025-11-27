@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  magnet-webdav:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - ENV=production
+      - DB_DRIVER=sqlite
+      - DB_NAME=/data/db/magnet_webdav.db
+      - TORRENT_DIR=/data/torrents
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+
+  # 可选：PostgreSQL 版本
+  # magnet-webdav-pg:
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - ENV=production
+  #     - DB_DRIVER=postgres
+  #     - DB_HOST=postgres
+  #     - DB_USER=postgres
+  #     - DB_PASSWORD=password
+  #     - DB_NAME=magnet_webdav
+  #     - TORRENT_DIR=/data/torrents
+  #   volumes:
+  #     - ./data:/data
+  #   depends_on:
+  #     - postgres
+  #   restart: unless-stopped
+
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=magnet_webdav
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:
