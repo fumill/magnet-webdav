@@ -1,6 +1,6 @@
 # Magnet WebDAV Server
 
-基于 Go 语言的磁力链接 WebDAV 服务器，支持在线播放和 CDN 加速。
+基于 Go 语言的磁力链接 WebDAV 服务器，支持在线播放。
 
 ## 功能特性
 
