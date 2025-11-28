@@ -47,61 +47,86 @@ func (h *WebDAVHandler) handleGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	magnetID := parts[0]
-	// 正确解码文件路径
 	encodedFilePath := strings.Join(parts[1:], "/")
+
+	// Properly unescape filename
 	filePath, err := url.PathUnescape(encodedFilePath)
 	if err != nil {
 		http.Error(w, "Invalid file path encoding", http.StatusBadRequest)
 		return
 	}
 
-	// 处理范围请求
+	// Parse Range
 	var start, end int64
 	if rangeHeader := r.Header.Get("Range"); rangeHeader != "" {
 		parsed, err := parseRangeHeader(rangeHeader)
 		if err == nil {
-			start = parsed.start
-			end = parsed.end
+			start, end = parsed.start, parsed.end
 		}
 	}
 
-	// 直接流式传输
+	// Try get torrent reader
 	file, reader, err := h.torrentService.GetFileStream(magnetID, filePath, start, end)
 	if err != nil {
 		log.Printf("Error getting file stream: %v", err)
 		http.Error(w, "File not found or not ready", http.StatusNotFound)
 		return
 	}
+
+	// IMPORTANT: if special caching conditions match, return 304 without reading
+	if h.handleConditionalRequest(w, r, filePath, start, end) {
+		reader.Close()
+		return
+	}
+
 	defer reader.Close()
 
-	// 设置响应头以支持缓存
-	h.setCacheHeaders(w, r, filePath, start, end)
-
-	// 设置响应头
 	mimeType := getMimeType(filePath)
 	w.Header().Set("Content-Type", mimeType)
 	w.Header().Set("Accept-Ranges", "bytes")
 
 	fileSize := file.Length()
-	if start > 0 || end > 0 {
-		actualEnd := end
-		if actualEnd == 0 || actualEnd >= fileSize {
-			actualEnd = fileSize - 1
-		}
-		contentLength := actualEnd - start + 1
+
+	// Fix end boundaries
+	if end == 0 || end >= fileSize {
+		end = fileSize - 1
+	}
+
+	// Partial Content
+	if start > 0 || r.Header.Get("Range") != "" {
+		contentLength := end - start + 1
 		w.Header().Set("Content-Length", strconv.FormatInt(contentLength, 10))
 		w.Header().Set("Content-Range",
-			fmt.Sprintf("bytes %d-%d/%d", start, actualEnd, fileSize))
+			fmt.Sprintf("bytes %d-%d/%d", start, end, fileSize))
 		w.WriteHeader(http.StatusPartialContent)
 	} else {
 		w.Header().Set("Content-Length", strconv.FormatInt(fileSize, 10))
 	}
 
-	// 流式传输数据
+	// Optimize torrent streaming
+	reader.SetReadahead(2 * 1024 * 1024) // 2MB max prefetch
+
 	if r.Method == "GET" {
-		io.Copy(w, reader)
+		_, copyErr := io.CopyN(w, reader, end-start+1)
+		if copyErr != nil && copyErr != io.EOF {
+			log.Printf("Copy error: %v", copyErr)
+		}
 	}
 }
+
+func (h *WebDAVHandler) handleConditionalRequest(w http.ResponseWriter, r *http.Request, filePath string, start, end int64) bool {
+	etag := generateETag(filePath, start, end)
+	w.Header().Set("ETag", etag)
+	h.setCacheHeaders(w, r, filePath, start, end)
+
+	ifNoneMatch := r.Header.Get("If-None-Match")
+	if ifNoneMatch != "" && ifNoneMatch == etag {
+		w.WriteHeader(http.StatusNotModified)
+		return true // <== STOP HERE
+	}
+	return false
+}
+
 // setCacheHeaders 设置缓存头
 func (h *WebDAVHandler) setCacheHeaders(w http.ResponseWriter, r *http.Request, filePath string, start, end int64) {
 	// 设置缓存控制头
@@ -341,7 +366,7 @@ func getMimeType(filename string) string {
 		".webm": "video/webm",
 		".jpg":  "image/jpeg",
 		".png":  "image/png",
-		".srt":  "text/plain; charset=utf-8",  // 字幕文件也设置编码
+		".srt":  "text/plain; charset=utf-8", // 字幕文件也设置编码
 		".ass":  "text/plain; charset=utf-8",
 		".ssa":  "text/plain; charset=utf-8",
 	}
